@@ -3,7 +3,7 @@
 #include "Vector3_Math.hpp"
 #include "Matrix4x4.h"
 
-const char kWindowTitle[] = "学籍番号";
+const char kWindowTitle[] = "K022G0032";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
