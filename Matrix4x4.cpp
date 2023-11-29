@@ -434,6 +434,86 @@ Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle) {
 	return SPC;
 }
 
+Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float sin, float cos) {
+	Matrix4x4 S = MakeIdentity4x4();
+	S.m[0][0] = cos;
+	S.m[1][1] = cos;
+	S.m[2][2] = cos;
+
+	Matrix4x4 P = MakeIdentity4x4();
+	P.m[0][0] = axis.x * axis.x * (1.0f - cos);
+	P.m[0][1] = axis.x * axis.y * (1.0f - cos);
+	P.m[0][2] = axis.x * axis.z * (1.0f - cos);
+	P.m[0][3] = 0;
+
+	P.m[1][0] = axis.y * axis.x * (1.0f - cos);
+	P.m[1][1] = axis.y * axis.y * (1.0f - cos);
+	P.m[1][2] = axis.y * axis.z * (1.0f - cos);
+	P.m[1][3] = 0;
+
+	P.m[2][0] = axis.z * axis.x * (1.0f - cos);
+	P.m[2][1] = axis.z * axis.y * (1.0f - cos);
+	P.m[2][2] = axis.z * axis.z * (1.0f - cos);
+	P.m[2][3] = 0;
+
+	P.m[3][0] = 0;
+	P.m[3][1] = 0;
+	P.m[3][2] = 0;
+	P.m[3][3] = 1;
+
+	Matrix4x4 C = MakeIdentity4x4();
+	C.m[0][0] = 0;
+	C.m[0][1] = (-1 * sin) * -axis.z;
+	C.m[0][2] = (-1 * sin) * axis.y;
+	C.m[0][3] = 0;
+
+	C.m[1][0] = (-1 * sin) * axis.z;
+	C.m[1][1] = 0;
+	C.m[1][2] = (-1 * sin) * -axis.x;
+	C.m[1][3] = 0;
+
+	C.m[2][0] = (-1 * sin) * -axis.y;
+	C.m[2][1] = (-1 * sin) * axis.x;
+	C.m[2][2] = 0;
+	C.m[2][3] = 0;
+
+	C.m[3][0] = 0;
+	C.m[3][1] = 0;
+	C.m[3][2] = 0;
+	C.m[3][3] = 1;
+
+	Matrix4x4 SPC = Add(S, Add(P, C));
+	SPC.m[3][3] = 1;
+
+	return SPC;
+}
+
+Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
+
+	//回転軸
+	Vector3 n;
+	if (from.x == -to.x && from.y == -to.y && from.z == -to.z) {
+		if (from.x != 0 || from.y != 0) {
+			n = Normalize({ from.y, -from.x, 0 });
+		}
+		else if (from.x != 0 || from.z != 0) {
+			n = Normalize({ from.z, 0, -from.x });
+		}
+		else {
+			assert(false);
+		}
+	}
+	else {
+		n = Normalize(Cross(from, to));
+	}
+
+	//角度
+	float sin = Length(Cross(from, to));
+	float cos = Dot(from, to);
+
+	return MakeRotateAxisAngle(n, sin, cos);
+}
+
 void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label) {
 	Novice::ScreenPrintf(x, y, "%s", label);
 	for (int row = 0; row < 4; row++) {

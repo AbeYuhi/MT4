@@ -87,4 +87,8 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 
 Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
 
+Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float sin, float cos);
+
+Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
+
 void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label);
