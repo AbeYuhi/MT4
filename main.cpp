@@ -16,15 +16,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
-	Quaternion q1 = { 2.0f, 3.0f, 4.0f, 1.0f };
-	Quaternion q2 = { 1.0f, 3.0f, 5.0f, 2.0f };
-	Quaternion identity = IdentityQuaternion();
-	Quaternion conj = Conjugate(q1);
-	Quaternion inv = Inverse(q1);
-	Quaternion normal = Normalize(q1);
-	Quaternion mul1 = Multiply(q1, q2);
-	Quaternion mul2 = Multiply(q2, q1);
-	float norm = Norm(q1);
+	Quaternion rotation = MakeRotateAxisAngleQuaternion(Normalize(Vector3{1.0f, 0.4f, -0.2f}), 0.45f);
+	Vector3 pointY = { 2.1f, -0.9f, 1.3f };
+	Matrix4x4 rotateMatrix = MakeRotateMatrix(rotation);
+	Vector3 rotateByQuaternion = RotateVector(pointY, rotation);
+	Vector3 rotateByMatrix = Transform(pointY, rotateMatrix);
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -47,13 +43,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
-		ScreenPrintf(0, 0, identity, "Identity");
-		ScreenPrintf(0, kRowHeight, conj, "Conjugate");
-		ScreenPrintf(0, kRowHeight * 2, inv, "Inverse");
-		ScreenPrintf(0, kRowHeight * 3, normal, "Normalize");
-		ScreenPrintf(0, kRowHeight * 4, mul1, "Multiply1");
-		ScreenPrintf(0, kRowHeight * 5, mul2, "Multiply2");
-		Novice::ScreenPrintf(0, kRowHeight * 6, "%6.02f", norm);
+		ScreenPrintf(0, kRowHeight * 0, rotation, "   :  rotation");
+		MatrixScreenPrintf(0, kRowHeight * 1, rotateMatrix, "rotateMatrix");
+		VectorScreenPrintf(0, kRowHeight * 6, rotateByQuaternion, "rotateByQuaternion");
+		VectorScreenPrintf(0, kRowHeight * 7, rotateByMatrix, "rotateByMatrix");
 
 		///
 		/// ↑描画処理ここまで

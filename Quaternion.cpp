@@ -44,6 +44,54 @@ Quaternion Inverse(const Quaternion& quaternion){
 	return ans;
 }
 
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
+	Quaternion quaternion;
+
+	quaternion.w = std::cos(angle / 2.0f);
+	quaternion.x = axis.x * std::sin(angle / 2.0f);
+	quaternion.y = axis.y * std::sin(angle / 2.0f);
+	quaternion.z = axis.z * std::sin(angle / 2.0f);
+
+	return quaternion;
+}
+
+Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion) {
+	//共役
+	Quaternion conjugate = Conjugate(quaternion);
+	Quaternion r = {vector.x, vector.y, vector.z, 0};
+
+	Quaternion rDash = Multiply(quaternion, Multiply(r, conjugate));
+
+	return { rDash.x, rDash.y, rDash.z };
+}
+
+Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion) {
+
+	Matrix4x4 matrix = {};
+
+	matrix.m[0][0] = powf(quaternion.w, 2) + powf(quaternion.x, 2) - powf(quaternion.y, 2) - powf(quaternion.z, 2);
+	matrix.m[0][1] = 2 * (quaternion.x * quaternion.y + quaternion.w * quaternion.z);
+	matrix.m[0][2] = 2 * (quaternion.x * quaternion.z - quaternion.w * quaternion.y);
+	matrix.m[0][3] = 0;
+
+	matrix.m[1][0] = 2 * (quaternion.x * quaternion.y - quaternion.w * quaternion.z);
+	matrix.m[1][1] = powf(quaternion.w, 2) - powf(quaternion.x, 2) + powf(quaternion.y, 2) - powf(quaternion.z, 2);
+	matrix.m[1][2] = 2 * (quaternion.y * quaternion.z + quaternion.w * quaternion.x);
+	matrix.m[1][3] = 0;
+
+	matrix.m[2][0] = 2 * (quaternion.x * quaternion.z + quaternion.w * quaternion.y);
+	matrix.m[2][1] = 2 * (quaternion.y * quaternion.z - quaternion.w * quaternion.x);
+	matrix.m[2][2] = powf(quaternion.w, 2) - powf(quaternion.x, 2) - powf(quaternion.y, 2) + powf(quaternion.z, 2);
+	matrix.m[2][3] = 0;
+
+	matrix.m[3][0] = 0;
+	matrix.m[3][1] = 0;
+	matrix.m[3][2] = 0;
+	matrix.m[3][3] = 1;
+
+	return matrix;
+}
+
 void ScreenPrintf(int x, int y, const Quaternion& quaternion, const char* label) {
 	Novice::ScreenPrintf(x, y, "%6.02f, %6.02f, %6.02f, %6.02f : %s", quaternion.x, quaternion.y, quaternion.z, quaternion.w, label);
 }
