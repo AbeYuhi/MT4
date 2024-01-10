@@ -17,7 +17,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char preKeys[256] = {0};
 
 	Quaternion rotation0 = MakeRotateAxisAngleQuaternion(Vector3{0.71f, 0.71f, 0.0f}, 0.3f);
-	Quaternion rotation1 = MakeRotateAxisAngleQuaternion(Vector3{0.71f, 0.0f, 0.71f}, 3.141592f);
+	Quaternion rotation1 = { -rotation0.x, -rotation0.y, -rotation0.z, -rotation0.w };
 
 	rotation0 = Normalize(rotation0);
 	rotation1 = Normalize(rotation1);
