@@ -1,5 +1,35 @@
 #include "Quaternion.h"
 
+Quaternion operator*(const Quaternion& num1, const float num2) {
+	Quaternion ans;
+	ans.w = num1.w * num2;
+	ans.x = num1.x * num2;
+	ans.y = num1.y * num2;
+	ans.z = num1.z * num2;
+
+	return ans;
+}
+
+Quaternion operator*(const float num1, const Quaternion& num2) {
+	Quaternion ans;
+	ans.w = num1 * num2.w;
+	ans.x = num1 * num2.x;
+	ans.y = num1 * num2.y;
+	ans.z = num1 * num2.z;
+
+	return ans;
+}
+
+Quaternion operator+(const Quaternion& num1, const Quaternion& num2) {
+	Quaternion ans;
+	ans.w = num1.w + num2.w;
+	ans.x = num1.x + num2.x;
+	ans.y = num1.y + num2.y;
+	ans.z = num1.z + num2.z;
+
+	return ans;
+}
+
 Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs) {
 	Quaternion ans;
 
@@ -42,6 +72,10 @@ Quaternion Inverse(const Quaternion& quaternion){
 	ans.y = conjugate.y / powf(norm, 2);
 	ans.z = conjugate.z / powf(norm, 2);
 	return ans;
+}
+
+float Dot(const Quaternion& q0, const Quaternion& q1) {
+	return q0.w * q1.w + q0.x * q1.x + q0.y * q1.y + q0.z * q1.z;
 }
 
 Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
@@ -92,6 +126,23 @@ Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion) {
 	return matrix;
 }
 
+Quaternion Slerp(Quaternion q0, Quaternion q1, float t) {
+	float dot = Dot(q0, q1);
+
+	if (dot < 0) {
+		q0 = Conjugate(q0);
+		dot = -dot;
+	}
+
+	float theta = std::acos(dot);
+
+	//
+	float scale0 = std::sin((1.0f - t) * theta) / std::sin(theta);
+	float scale1 = std::sin(t * theta) / std::sin(theta);
+
+	return scale0 * q0 + scale1 * q1;
+}
+
 void ScreenPrintf(int x, int y, const Quaternion& quaternion, const char* label) {
-	Novice::ScreenPrintf(x, y, "%6.02f, %6.02f, %6.02f, %6.02f : %s", quaternion.x, quaternion.y, quaternion.z, quaternion.w, label);
+	Novice::ScreenPrintf(x, y, "%6.2f, %6.2f, %6.2f, %6.2f : %s", quaternion.x, quaternion.y, quaternion.z, quaternion.w, label);
 }
